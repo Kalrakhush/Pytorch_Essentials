@@ -1,0 +1,79 @@
+##Step-function
+A step function is a simple mathematical function often used in machine learning. Think of it as a switch: it takes an input number and decides whether to "turn on" or "turn off" based on a threshold.
+
+For example:
+
+If the input is greater than or equal to a certain value (like 0), the output is 1 (ON).
+If the input is less than that value, the output is 0 (OFF).
+It's like a light switch that flips based on the input. However, because it changes suddenly, it’s not commonly used in modern neural networks, which prefer smoother functions like ReLU or sigmoid.
+
+f(X)= 1, if x>=0
+      0  otherwise
+
+##Sigmoid
+The sigmoid function is a mathematical function that maps any input to a value between 0 and 1. It is widely used in machine learning, especially in binary classification problems.
+
+The formula for the sigmoid function is:
+
+f(x) = 1 / (1 + e^(-x))
+
+Key properties:
+- Smooth and differentiable.
+- Outputs values in the range (0, 1), making it useful for probability estimation.
+- However, it can suffer from the vanishing gradient problem in deep networks.
+
+
+##Tanh
+The Tanh (hyperbolic tangent) function is another activation function commonly used in machine learning. It maps input values to a range between -1 and 1.
+
+The formula for the Tanh function is:
+
+f(x) = (e^x - e^(-x)) / (e^x + e^(-x))
+
+Key properties:
+- Smooth and differentiable.
+- Outputs values in the range (-1, 1), making it zero-centered.
+- Often used in hidden layers of neural networks.
+- Like the sigmoid function, it can also suffer from the vanishing gradient problem in deep networks.
+
+
+##Relu
+The ReLU (Rectified Linear Unit) function is one of the most widely used activation functions in deep learning. It introduces non-linearity by outputting the input directly if it is positive, and zero otherwise.
+
+The formula for the ReLU function is:
+
+f(x) = max(0, x)
+
+Key properties:
+- Computationally efficient and simple to implement.
+- Helps mitigate the vanishing gradient problem.
+- Outputs values in the range [0, ∞), which can lead to faster convergence during training.
+- Can suffer from the "dying ReLU" problem, where neurons output zero for all inputs and stop learning.
+
+
+##Leaky Relu
+The Leaky ReLU (Leaky Rectified Linear Unit) function is a variation of the ReLU activation function. It addresses the "dying ReLU" problem by allowing a small, non-zero gradient for negative input values.
+
+The formula for the Leaky ReLU function is:
+
+f(x) = x if x > 0, else α * x
+
+Where α (alpha) is a small positive constant, typically 0.01.
+
+Key properties:
+- Allows a small gradient for negative inputs, preventing neurons from "dying".
+- Outputs values in the range (-∞, ∞).
+- Retains the computational efficiency of ReLU.
+- Often used as an alternative to ReLU in deep neural networks.
+
+##Softmax
+The softmax function is commonly used in machine learning, particularly in the output layer of classification models. It converts raw scores (logits) into probabilities, ensuring that the sum of the probabilities is equal to 1.
+
+The formula for the softmax function is:
+
+f(x_i) = e^(x_i) / Σ(e^(x_j)) for j = 1 to n
+
+Key properties:
+- Outputs values in the range (0, 1), making it suitable for probability distributions.
+- Ensures that the sum of all outputs is 1.
+- Often used in multi-class classification problems to predict the probability of each class.
