@@ -24,14 +24,16 @@ num_epochs = 2
 batch_size = 100
 learning_rate = 0.001
 
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+
  #MNIST dataset
 train_dataset = torchvision.datasets.MNIST(root='./data',
                                            train=True,
-                                           transform=transforms.ToTensor(),
+                                           transform=transform,
                                            download=True)
 test_dataset = torchvision.datasets.MNIST(root='./data',
                                            train=True,
-                                           transform=transforms.ToTensor(),)
+                                           transform=transform)
 
 
 #Data loader
@@ -42,7 +44,7 @@ test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
                                           batch_size=batch_size,
                                           shuffle=False)
 
-example = iter(train_loader)
+example = iter(test_loader)
 samples, labels = next(example)
 print(samples.shape)
 print(labels.shape)  
@@ -111,7 +113,7 @@ with torch.no_grad():
 
 
 #save the model checkpoint
-# torch.save(model.state_dict(), 'model.ckpt')
+torch.save(model.state_dict(), 'mnist.fnn.pth')
 # #load the model checkpoint
 # model.load_state_dict(torch.load('model.ckpt'))
 
