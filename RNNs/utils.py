@@ -97,4 +97,4 @@ if __name__ == '__main__':
     print(category_lines['Italian'][:5])
     
     print(letter_to_tensor('J')) # [1, 57]
-    print(line_to_tensor('Jones').size()) # [5, 1, 57]
+    print(line_to_tensor('Jones').size()) # [5, 1, 57] 

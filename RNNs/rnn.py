@@ -1,0 +1,137 @@
+#MNIST
+#Dataloader
+#Multilayer Neural Net, activation function
+#Loss and optimizer
+#Training loop (batchtraining)
+#Model evaluation
+#Gpu support
+
+import torch
+import torch.nn as nn
+import torchvision
+import torchvision.transforms as transforms
+import matplotlib.pyplot as plt
+
+
+#device config
+device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+
+#Hyperparameters
+# input_size = 784 #28*28
+hidden_size = 128
+num_classes = 10
+num_epochs = 2
+batch_size = 100
+learning_rate = 0.001
+
+input_size = 28
+sequence_length = 28 #timesteps
+num_layers = 2
+
+transform = transforms.Compose([transforms.ToTensor(), transforms.Normalize((0.1307,), (0.3081,))])
+
+ #MNIST dataset
+train_dataset = torchvision.datasets.MNIST(root='./data',
+                                           train=True,
+                                           transform=transform,
+                                           download=True)
+test_dataset = torchvision.datasets.MNIST(root='./data',
+                                           train=True,
+                                           transform=transform)
+
+
+#Data loader
+train_loader = torch.utils.data.DataLoader(dataset=train_dataset,
+                                           batch_size=batch_size,
+                                           shuffle=True)
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset,
+                                          batch_size=batch_size,
+                                          shuffle=False)
+
+example = iter(test_loader)
+samples, labels = next(example)
+print(samples.shape)
+print(labels.shape)  
+
+for i in range(5):
+    plt.subplot(2, 3, i+1)
+    plt.imshow(samples[i][0], cmap='gray')
+    plt.title(f'Label: {labels[i]}')
+# plt.show()
+
+#now we want to classify digits
+class RNN(nn.Module):
+    def __init__(self, input_size, hidden_size,num_layers, num_classes):
+        super(RNN, self).__init__()
+        self.num_layers = num_layers
+        self.hidden_size = hidden_size
+        # self.rnn = nn.RNN(input_size, hidden_size, num_layers, batch_first=True)
+        # self.gru = nn.GRU(input_size, hidden_size, num_layers, batch_first=True)
+        self.lstm = nn.LSTM(input_size, hidden_size, num_layers, batch_first=True)
+        self.fc = nn.Linear(hidden_size, num_classes)
+
+    def forward(self, x):
+        h0= torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device) #initial hidden state
+        c0= torch.zeros(self.num_layers, x.size(0), self.hidden_size).to(device) #initial cell state
+
+        # out,_ = self.rnn(x, h0) #out: tensor of shape (batch_size, seq_length, hidden_size)
+        # out,_ =self.gru(x, h0) #out: tensor of shape (batch_size, seq_length, hidden_size)
+
+        out, (hn, cn) = self.lstm(x, (h0, c0)) #out: tensor of shape (batch_size, seq_length, hidden_size)
+        #batch_size, seq_length, hidden_size
+        #out (N, 28, 128)
+        out = out[:, -1, :] #taking the last time step
+        #out (N, 128)
+        out = self.fc(out) #out (N, 10)
+        return out
+    
+model = RNN(input_size, hidden_size, num_layers,num_classes).to(device)
+
+#Loss and optimizer
+criterion = nn.CrossEntropyLoss()
+optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
+
+#Training loop
+total_step = len(train_loader)
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):
+        #reshape images to (batch_size, input_size)
+        images = images.reshape(-1,sequence_length,input_size ).to(device)
+        labels = labels.to(device)
+
+        #forward pass
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+
+        #backward pass and optimization
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if (i+1) % 100 == 0:
+            print(f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{total_step}], Loss: {loss.item():.4f}')
+
+#Model evaluation
+with torch.no_grad():
+    correct = 0
+    total = 0
+    for images, labels in test_loader:
+        images = images.reshape(-1, sequence_length,input_size).to(device)
+        labels = labels.to(device)
+
+        outputs = model(images)
+        _, predicted = torch.max(outputs.data, 1)
+        total += labels.size(0)
+        correct += (predicted == labels).sum().item()
+
+    print(f'Accuracy of the model on the 10000 test images: {100 * correct / total} %')
+
+
+
+#save the model checkpoint
+torch.save(model.state_dict(), 'mnist.fnn.pth')
+# #load the model checkpoint
+# model.load_state_dict(torch.load('model.ckpt'))
+
+
+
