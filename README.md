@@ -40,8 +40,13 @@ Mastering PyTorch is a gateway to:
 
 ## 📁 Repo Structure
 
-├── ML_stuff/ # ML from scratch (NumPy) ├── Neural_Network_Stuff/ # Core PyTorch experiments ├── CNN/ # Convolutional Networks ├── RNNs/ # Recurrent Networks ├── Pytorch_lightning/ # Lightning implementations ├── Project/ # Applied learning projects └── lr_scheduler.py # Learning rate scheduler utility
-
+├── ML_stuff/                 # ML from scratch (NumPy)
+├── Neural_Network_Stuff/     # Core PyTorch experiments
+├── CNN/                      # Convolutional Networks
+├── RNNs/                     # Recurrent Networks
+├── Pytorch_lightning/        # Lightning implementations
+├── Project/                  # Applied learning projects
+└── lr_scheduler.py           # Learning rate scheduler utility
 
 ---
 
